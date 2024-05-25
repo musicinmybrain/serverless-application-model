@@ -6,6 +6,8 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import suppress
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar
 
+from pydantic.error_wrappers import ValidationError
+
 from samtranslator.compat import pydantic
 from samtranslator.model.exceptions import (
     ExpectedType,
@@ -345,7 +347,7 @@ class Resource(ABC):
         """
         try:
             return cls.parse_obj(self._generate_resource_dict()["Properties"])
-        except pydantic.error_wrappers.ValidationError as e:
+        except ValidationError as e:
             error_properties: str = ""
             with suppress(KeyError):
                 error_properties = ".".join(str(x) for x in e.errors()[0]["loc"])
